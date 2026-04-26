@@ -1,0 +1,27 @@
+# Environment and secrets
+.env
+*.env
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.py[cod]
+
+# Node
+node_modules/
+build/
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+
+# Local smoke/debug artifacts
+*.log
+*.pid
+*.db
+backend/.smoke_*.py
+backend/tmp_*.py

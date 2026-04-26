@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}How It Works — Smart Home AI Decision Assistant{% endblock %}
+
+{% block content %}
+<section id="howItWorksPage" class="section-page">
+    <div class="how-it-works-content">
+        <div class="how-it-works-hero">
+            <div>
+                <div class="how-it-works-kicker">
+                    <i class="fas fa-circle-info"></i>
+                    How It Works
+                </div>
+                <h1 class="section-title-serif">AI Smart Home Advisor Workflow</h1>
+                <p>
+                    The assistant turns a plain-language query into a ranked smart home shortlist using intent extraction,
+                    shopping search, weighted scoring, and explainable AI reasoning.
+                </p>
+            </div>
+            <div class="workflow-pipeline">
+                <div class="pipeline-step">
+                    <div class="pipeline-step-number">1</div>
+                    <div>
+                        <strong>User Query</strong>
+                        <div class="small text-secondary">A natural-language request like "best smart AC for living room"</div>
+                    </div>
+                </div>
+                <div class="pipeline-arrow"><i class="fas fa-arrow-down"></i></div>
+                <div class="pipeline-step">
+                    <div class="pipeline-step-number">2</div>
+                    <div>
+                        <strong>AI NLP (Intent Extraction)</strong>
+                        <div class="small text-secondary">Groq extracts product type, features, budget, and use case</div>
+                    </div>
+                </div>
+                <div class="pipeline-arrow"><i class="fas fa-arrow-down"></i></div>
+                <div class="pipeline-step">
+                    <div class="pipeline-step-number">3</div>
+                    <div>
+                        <strong>Search (SerpAPI)</strong>
+                        <div class="small text-secondary">Live shopping results are fetched from the market</div>
+                    </div>
+                </div>
+                <div class="pipeline-arrow"><i class="fas fa-arrow-down"></i></div>
+                <div class="pipeline-step">
+                    <div class="pipeline-step-number">4</div>
+                    <div>
+                        <strong>Ranking Algorithm</strong>
+                        <div class="small text-secondary">Feature match, rating, price fit, and reviews are weighted</div>
+                    </div>
+                </div>
+                <div class="pipeline-arrow"><i class="fas fa-arrow-down"></i></div>
+                <div class="pipeline-step">
+                    <div class="pipeline-step-number">5</div>
+                    <div>
+                        <strong>AI Reasoning</strong>
+                        <div class="small text-secondary">Each recommendation gets a short explainable reason</div>
+                    </div>
+                </div>
+                <div class="pipeline-arrow"><i class="fas fa-arrow-down"></i></div>
+                <div class="pipeline-step">
+                    <div class="pipeline-step-number">6</div>
+                    <div>
+                        <strong>Final Recommendation</strong>
+                        <div class="small text-secondary">The best product is highlighted for quick decision-making</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="how-it-works-grid">
+            <div class="how-it-works-card">
+                <h3>Backend Explanation</h3>
+                <p>The project uses FastAPI for the backend, Groq AI for language understanding, SerpAPI for live product search, and a heuristic ranking layer for final ordering.</p>
+                <div class="tech-pill"><i class="fas fa-bolt"></i> FastAPI</div>
+                <div class="tech-pill"><i class="fas fa-brain"></i> Groq AI</div>
+                <div class="tech-pill"><i class="fas fa-search"></i> SerpAPI</div>
+                <div class="tech-pill"><i class="fas fa-layer-group"></i> Heuristic Ranking</div>
+            </div>
+            <div class="how-it-works-card">
+                <h3>AI Techniques Used</h3>
+                <ul class="mb-0 ps-3">
+                    <li>NLP for intent extraction</li>
+                    <li>Heuristic search for ranking</li>
+                    <li>Generative AI for explanation text</li>
+                    <li>Prompt engineering for structured output</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="how-it-works-grid mt-4">
+            <div class="how-it-works-card">
+                <h3>Features</h3>
+                <div class="feature-pill"><i class="fas fa-sparkles"></i> Smart recommendations</div>
+                <div class="feature-pill"><i class="fas fa-coins"></i> Budget filtering</div>
+                <div class="feature-pill"><i class="fas fa-exchange-alt"></i> Product comparison</div>
+            </div>
+            <div class="how-it-works-card">
+                <h3>Introduction</h3>
+                <p>
+                    The AI Smart Home Advisor helps users discover appliances and smart devices that match their needs,
+                    budget, and preferred features without manually comparing dozens of listings.
+                </p>
+            </div>
+        </div>
+
+        <div class="how-it-works-card mt-4">
+            <h3>Future Improvements</h3>
+            <div class="future-grid">
+                <div class="future-card">
+                    <h4>Machine Learning Model</h4>
+                    <p>Learn user preferences over time to improve ranking quality.</p>
+                </div>
+                <div class="future-card">
+                    <h4>Personalization</h4>
+                    <p>Adapt results based on repeated searches, favorites, and usage history.</p>
+                </div>
+                <div class="future-card">
+                    <h4>Database Integration</h4>
+                    <p>Store products, user preferences, and comparison history for persistence.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.SHG_APP && typeof window.SHG_APP.showPage === 'function') {
+            window.SHG_APP.showPage('howItWorks');
+        }
+    });
+</script>
+{% endblock %}

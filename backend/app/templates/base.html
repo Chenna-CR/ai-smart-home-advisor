@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Smart Home AI Decision Assistant{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/styles.css?v=20260424-howitworks" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <!-- ── Aesthetic Background System ─────────────────────── -->
+    <div class="aesthetic-bg-container">
+        <div class="mesh-gradient"></div>
+        <div class="floating-blobs">
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+            <div class="blob blob-3"></div>
+        </div>
+        <div class="grain-overlay"></div>
+    </div>
+
+    <!-- ── Modern Navbar ────────────────────────────────────── -->
+    <nav class="navbar fixed-top">
+        <div class="navbar-inner">
+            <div></div> <!-- Empty left for layout balance -->
+
+            <div class="nav-right">
+                <a href="#" class="nav-link me-2" onclick="openFavoritesModal();return false"><i class="fas fa-heart text-danger"></i></a>
+                <a class="btn btn-outline me-2" href="/how-it-works">
+                    How It Works
+                </a>
+                <div id="authLoading" class="auth-loading" style="display:none;">
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span>Checking account...</span>
+                </div>
+                <a class="btn btn-outline me-2" id="loginBtn" href="/login" style="display:none;">
+                    Sign in with Google
+                </a>
+                <div id="profileDropdown" class="dropdown" style="display:none;">
+                    <button class="profile-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="profile-avatar" id="navbarProfileAvatar">U</span>
+                        <span class="profile-name" id="navbarProfileName">User</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end profile-menu">
+                        <li class="profile-menu-header">
+                            <div class="profile-menu-avatar" id="dropdownProfileAvatar">U</div>
+                            <div class="profile-menu-meta">
+                                <div class="profile-menu-name" id="dropdownProfileName">User</div>
+                                <div class="profile-menu-email" id="dropdownProfileEmail">email@example.com</div>
+                            </div>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item profile-logout" id="logoutBtn" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                    </ul>
+                </div>
+                <button class="btn-premium" onclick="showPage('assistant')">
+                    <i class="fas fa-robot"></i> Ask AI
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ── Modern Sidebar ───────────────────────────────────── -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a class="sidebar-logo" href="/" onclick="showPage('home');return false">
+                <span class="brand-icon"><i class="fas fa-brain"></i></span>
+                AI Decision Assistant
+            </a>
+        </div>
+        
+        <div class="sidebar-menu">
+            <a class="sidebar-link active" href="#" id="link-home" onclick="showPage('home');return false">
+                <i class="fas fa-home"></i> <span>Home</span>
+            </a>
+            <a class="sidebar-link" href="#" id="link-assistant" onclick="showPage('assistant');return false">
+                <i class="fas fa-robot"></i> <span>AI Assistant</span>
+            </a>
+            <a class="sidebar-link" href="#" id="link-recommendations" onclick="showPage('recommendations');return false">
+                <i class="fas fa-sparkles"></i> <span>Recommendations</span>
+            </a>
+            <a class="sidebar-link" href="#" id="link-analytics" onclick="showPage('analytics');return false">
+                <i class="fas fa-chart-pie"></i> <span>Analytics</span>
+            </a>
+            <a class="sidebar-link" href="/how-it-works" id="link-howItWorks">
+                <i class="fas fa-circle-info"></i> <span>How It Works</span>
+            </a>
+            <a class="sidebar-link" href="#" id="link-compare" onclick="showPage('compare');return false">
+                <i class="fas fa-exchange-alt"></i> <span>Compare</span>
+            </a>
+        </div>
+
+        <div class="sidebar-history" id="chatHistoryPanel">
+            <div class="history-title">Recent Chats</div>
+            <div id="chatHistoryList" class="history-list">
+                <div class="history-empty">No chat history yet.</div>
+            </div>
+        </div>
+        
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <div class="user-avatar" id="userAvatar">AI</div>
+                <div class="user-info">
+                    <div class="user-name" id="userName">Guest User</div>
+                    <div class="user-status" id="userStatus">Guest Mode</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Main Content Container ────────────────────────────── -->
+    <main class="page-container" style="margin-top: 80px;">
+        
+        <!-- HOME PAGE -->
+        <div id="homePage" class="section-page active">
+            {% block home_content %}
+            <div class="home-hero">
+                <div class="hero-content">
+                    <h1 class="hero-title-main">AI Smart Home Assistant</h1>
+                    <p class="hero-subtitle-text">Experience the next generation of home appliances selection. Decisions powered by advanced AI algorithms, heuristic scoring, and real-time market data.</p>
+                    
+                    <div class="hero-actions">
+                        <button class="btn btn-hero btn-hero-primary" onclick="showPage('assistant')">
+                            <i class="fas fa-search"></i> Start AI Search
+                        </button>
+                        <button class="btn btn-hero btn-hero-outline" onclick="showPage('recommendations')">
+                            <i class="fas fa-star"></i> Explore Top Picks
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endblock %}
+        </div>
+
+        <!-- ASSISTANT PAGE -->
+        <div id="assistantPage" class="section-page">
+            <div class="assistant-page-content">
+                <div class="assistant-header">
+                    <h2 class="page-title">AI Discovery Assistant</h2>
+                    <p class="page-subtitle">Narrate your requirements in natural language and let the machine work.</p>
+                </div>
+
+                <div class="search-input-container">
+                    <div class="search-wrapper">
+                        <input type="text" id="aiQuery" class="search-input" placeholder="Find me a premium 5-star AC for a large living room..." />
+                        <div class="voice-waves-container" id="voiceWaves" style="display:none;">
+                            <svg class="voice-waves" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                <circle class="wave wave-1" cx="50" cy="50" r="15"/>
+                                <circle class="wave wave-2" cx="50" cy="50" r="15"/>
+                                <circle class="wave wave-3" cx="50" cy="50" r="15"/>
+                            </svg>
+                        </div>
+                        <button class="search-voice-btn" id="aiVoice" title="Click to start voice input" onclick="toggleVoiceSearch()">
+                            <i class="fas fa-microphone"></i>
+                            <span class="voice-indicator" id="voiceIndicator"></span>
+                        </button>
+                        <button id="aiSubmit" class="search-btn" onclick="performAISearch()">
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                    <div id="voiceStatus" class="voice-status" style="display:none;"></div>
+                </div>
+
+                <!-- Off-Topic Error Card with Dynamic Animation -->
+                <div id="offTopicCard" class="off-topic-card-wrapper" style="display: none;">
+                    <div class="off-topic-card-animated">
+                        <div class="off-topic-card-pulse"></div>
+                        <div class="off-topic-card-content-enhanced">
+                            <div class="off-topic-card-header-enhanced">
+                                <div class="off-topic-card-icon-animated">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <span class="icon-spark spark-1"></span>
+                                    <span class="icon-spark spark-2"></span>
+                                    <span class="icon-spark spark-3"></span>
+                                </div>
+                                <div class="off-topic-card-text-enhanced">
+                                    <h4 class="off-topic-card-title-enhanced">
+                                        <i class="fas fa-info-circle"></i> Smart Home Only
+                                    </h4>
+                                    <p class="off-topic-card-subtitle-enhanced">This is a Smart Home Buyer Guide</p>
+                                </div>
+                                <button class="off-topic-close-btn" onclick="document.getElementById('offTopicCard').style.display='none';">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            
+                            <p class="off-topic-card-message-enhanced">
+                                <i class="fas fa-arrow-right"></i> We specialize in helping you find the perfect smart home appliances and IoT devices. Try searching for something related to smart home products!
+                            </p>
+                            
+                            <div class="off-topic-card-suggestions-enhanced">
+                                <p class="suggestions-label-enhanced">
+                                    <i class="fas fa-sparkles"></i> Try searching for:
+                                </p>
+                                <div class="suggestion-chips-enhanced">
+                                    <button class="suggestion-chip-enhanced" onclick="suggestSearch('smart lighting system')">
+                                        <i class="fas fa-lightbulb"></i>
+                                        <span>Smart Lights</span>
+                                    </button>
+                                    <button class="suggestion-chip-enhanced" onclick="suggestSearch('smart thermostat')">
+                                        <i class="fas fa-temperature-high"></i>
+                                        <span>Thermostats</span>
+                                    </button>
+                                    <button class="suggestion-chip-enhanced" onclick="suggestSearch('smart security camera')">
+                                        <i class="fas fa-camera"></i>
+                                        <span>Security</span>
+                                    </button>
+                                    <button class="suggestion-chip-enhanced" onclick="suggestSearch('smart speaker')">
+                                        <i class="fas fa-volume-up"></i>
+                                        <span>Speakers</span>
+                                    </button>
+                                    <button class="suggestion-chip-enhanced" onclick="suggestSearch('smart lock')">
+                                        <i class="fas fa-lock"></i>
+                                        <span>Smart Lock</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="loadingOverlay" style="display: none; text-align: center; padding: 60px 20px;">
+                    <div class="spinner-border text-primary mb-3" role="status" style="width: 50px; height: 50px;"></div>
+                    <p style="color: var(--text-secondary);">Analyzing your requirements with AI...</p>
+                </div>
+                
+                <div id="aiAnalysisResults" style="display: none; background: rgba(99, 102, 241, 0.1); padding: 24px; border-radius: 16px; margin-bottom: 30px; border: 1px solid rgba(99, 102, 241, 0.2);">
+                    <h5 style="margin-bottom: 20px; color: var(--text-primary);">AI Intent Analysis</h5>
+                    <div id="intentStream" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;"></div>
+                    <div id="aiAnalysisContent" class="row"></div>
+                </div>
+
+                <div id="productGrid" class="product-grid-modern"></div>
+                <div id="resultMeta" style="text-align: center; padding: 40px 20px; color: var(--text-secondary);"></div>
+            </div>
+        </div>
+
+        <!-- RECOMMENDATIONS PAGE -->
+        <div id="recommendationsPage" class="section-page">
+            <div class="recommendations-content">
+                <div class="recommendations-header">
+                    <h2 class="page-title">AI-Curated Recommendations</h2>
+                    <p class="page-subtitle">High-alignment matches found across top retail stores.</p>
+                    <div class="found-count" id="foundCount">Found 0 Optimized Matches</div>
+                </div>
+                
+                <div id="recommendationsContent" class="product-grid-modern">
+                    <p style="color: var(--text-secondary); text-align: center; padding: 60px 20px; grid-column: 1 / -1;">Use AI Assistant to get personalized recommendations</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ANALYTICS PAGE -->
+        <div id="analyticsPage" class="section-page">
+            <div class="analytics-content">
+                <div class="analytics-header">
+                    <h2 class="page-title">Smarter Analytics Dash</h2>
+                    <p class="page-subtitle">Visual insights into product pricing dynamics and AI-scoring efficiency.</p>
+                </div>
+
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <div class="analytics-card-header">
+                            <h5 class="analytics-card-title"><i class="fas fa-chart-line"></i> Price Volatility Visualization</h5>
+                            <p class="analytics-card-subtitle">Visualizing price trends across the recommended range.</p>
+                        </div>
+                        <div id="priceDistChart" style="height: 350px;" class="analytics-chart"></div>
+                    </div>
+
+                    <div class="analytics-card">
+                        <div class="analytics-card-header">
+                            <h5 class="analytics-card-title"><i class="fas fa-star"></i> AI Feature Alignment Score</h5>
+                            <p class="analytics-card-subtitle">Distribution of alignment scores (0-100%).</p>
+                        </div>
+                        <div id="featureDistChart" style="height: 350px;" class="analytics-chart"></div>
+                    </div>
+                </div>
+
+                <div id="analyticsMessage" style="color: var(--text-secondary); text-align: center; padding: 60px 20px;">
+                    <i class="fas fa-chart-bar fa-3x mb-3 opacity-50"></i>
+                    <p>Use AI Assistant to see analytics</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- COMPARE PAGE -->
+        <div id="comparePage" class="section-page">
+            <div class="compare-content">
+                <div class="compare-header">
+                    <h2 class="page-title">Cognitive Side-by-Side</h2>
+                    <p class="page-subtitle">Contrasting top contenders to find your ultimate smart appliance match.</p>
+                </div>
+                
+                <div id="compareEmptyState" style="color: var(--text-secondary); text-align: center; padding: 80px 20px;">
+                    <i class="fas fa-exchange-alt fa-3x mb-3 opacity-50"></i>
+                    <p style="font-size: 1.1rem;">Select 2-6 products from recommendations to compare side by side</p>
+                    <button class="btn btn-hero btn-hero-primary mt-4" onclick="showPage('recommendations')">Go to Recommendations</button>
+                </div>
+
+                <div id="compareTableContainer" style="display: none;">
+                    <div class="compare-table-wrapper">
+                        <table class="compare-table">
+                            <thead id="compareHeader"></thead>
+                            <tbody id="compareBodyRow"></tbody>
+                        </table>
+                    </div>
+                    <button id="btnFindBest" class="btn btn-hero btn-hero-primary mt-5 w-100" onclick="findBestProduct()">
+                        <i class="fas fa-crown me-2"></i>Find the Best Product
+                    </button>
+                    <div id="bestProductVerdict" style="display: none; margin-top: 40px;"></div>
+                </div>
+            </div>
+        </div>
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ── FOOTER ─────────────────────────────────────────── -->
+    <footer class="site-footer">
+        <div class="footer-bottom text-center">
+            <p>&copy; 2026 Smart Home AI Decision Assistant. All rights reserved.</p>
+            <div class="footer-bottom-links mt-2">
+                <a href="#" class="text-muted small mx-2">Privacy Policy</a>
+                <a href="#" class="text-muted small mx-2">Terms of Service</a>
+                <a href="#" class="text-muted small mx-2">Contact Support</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ── MODALS & TOASTS ────────────────────────────────── -->
+    <div id="toastContainer" class="toast-container"></div>
+    
+    <div class="modal fade" id="favoritesModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">My Favorites</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="favoritesContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Detail Modal -->
+    <div class="modal fade" id="detailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">AI Product Analysis</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="detailContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Off-Topic Query Modal -->
+    <div class="modal fade" id="offTopicModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content off-topic-modal-content">
+                <div class="modal-body p-0">
+                    <div class="off-topic-modal-inner">
+                        <div class="off-topic-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <h4 class="off-topic-title">Smart Home Only</h4>
+                        <p class="off-topic-subtitle">This is a Smart Home Buyer Guide</p>
+                        <p class="off-topic-message">We specialize in helping you find the perfect smart home appliances and IoT devices.</p>
+                        
+                        <div class="off-topic-suggestions">
+                            <p class="suggestions-label">Try searching for:</p>
+                            <div class="suggestion-chips">
+                                <button class="suggestion-chip" onclick="suggestSearch('smart lighting system')"><i class="fas fa-lightbulb"></i> Smart Lights</button>
+                                <button class="suggestion-chip" onclick="suggestSearch('smart thermostat')"><i class="fas fa-temperature-high"></i> Thermostats</button>
+                                <button class="suggestion-chip" onclick="suggestSearch('smart security camera')"><i class="fas fa-camera"></i> Security</button>
+                                <button class="suggestion-chip" onclick="suggestSearch('smart speaker')"><i class="fas fa-volume-up"></i> Speakers</button>
+                            </div>
+                        </div>
+                        
+                        <button type="button" class="btn btn-primary w-100 mt-4" data-bs-dismiss="modal">
+                            Got it! Let me search for smart home products
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/static/scripts.js?v=20260424-howitworks"></script>
+    
+    <script>
+        // Make showPage globally accessible
+        function showPage(pageId) {
+            if (window.SHG_APP && typeof window.SHG_APP.showPage === 'function') {
+                return window.SHG_APP.showPage(pageId);
+            }
+        }
+        
+        // Also expose common functions globally if they exist in SHG_APP
+        window.openDetail = window.openDetail || function() {};
+        window.toggleFavorite = window.toggleFavorite || function() {};
+        window.toggleCompare = window.toggleCompare || function() {};
+        window.openFavoritesModal = window.openFavoritesModal || function() {};
+    </script>
+    {% block extra_js %}{% endblock %}
+
+</body>
+</html>

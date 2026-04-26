@@ -1,0 +1,2 @@
+C:\Users\chenn\Documents\Smart Home Appliance Buyer Guide\backend\app\static\assets\Tech_Video_With_Rotating_Home.mp4
+C:\Users\chenn\Documents\Smart Home Appliance Buyer Guide\backend\venv\assets\Tech_Video_With_Rotating_Home.mp4
