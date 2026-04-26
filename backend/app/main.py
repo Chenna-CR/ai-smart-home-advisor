@@ -316,7 +316,7 @@ async def index(request: Request):
         "index.html",
         {
             "request": request,
-            "categories": list(PRODUCT_CATEGORIES.keys()),
+            "categories": tuple(PRODUCT_CATEGORIES.keys()),
         },
     )
 
