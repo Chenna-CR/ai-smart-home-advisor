@@ -312,11 +312,13 @@ async def generate_pros_cons(product: Dict, ai_result: AIAnalysis) -> Tuple[List
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
     """Serve the home page."""
-    context = {
-        "request": request,
-        "categories": list(PRODUCT_CATEGORIES.keys()),
-    }
-    return templates.TemplateResponse("index.html", context)
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "categories": list(PRODUCT_CATEGORIES.keys()),
+        },
+    )
 
 
 @app.get("/how-it-works", response_class=HTMLResponse)
