@@ -12,3 +12,4 @@ numpy
 textblob
 python-multipart
 authlib
+itsdangerous
