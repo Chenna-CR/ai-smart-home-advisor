@@ -26,6 +26,14 @@
     const $ = (s) => document.querySelector(s);
     const $$ = (s) => document.querySelectorAll(s);
 
+    function renderFeatureChips(features) {
+        const items = (features || []).filter(Boolean).slice(0, 6);
+        if (!items.length) {
+            return '<div class="feature-chip-row"><span class="feature-chip">Feature details available</span></div>';
+        }
+        return `<div class="feature-chip-row">${items.map((feature) => `<span class="feature-chip">${feature}</span>`).join('')}</div>`;
+    }
+
     // ─── INITIALIZATION ───────────────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
         setupEventListeners();
@@ -340,9 +348,11 @@
                 const score = parseInt(p.match_score) || 0;
                 const isFavorite = state.favorites.some(f => f.name === p.name);
                 const isComparing = state.compareIndices.includes(i);
+                const isExpertPick = i === 0;
 
                 return `
                     <div class="product-card-modern">
+                        ${isExpertPick ? '<span class="expert-badge"><i class="fas fa-crown me-1"></i>Expert Pick</span>' : ''}
                         <div class="product-image">
                             ${p.image_url ? `<img src="${p.image_url}" alt="${p.name}">` : '<i class="fas fa-box fa-3x" style="color: var(--text-muted)"></i>'}
                             <div class="match-score-ring">
@@ -359,7 +369,8 @@
                                 <span class="stars"><i class="fas fa-star"></i> ${(p.rating || 4.5).toFixed(1)}</span>
                                 <span>${p.review_count || 100} reviews</span>
                             </div>
-                            <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 8px 0 0; flex-grow: 1;">${p.ai_reason || p.reason || 'Smart home device recommendation'}</p>
+                            ${renderFeatureChips(p.features)}
+                            <p class="product-reason">${p.ai_reason || p.reason || 'Smart home device recommendation'}</p>
                             
                             <div class="product-actions">
                                 <button class="action-btn" onclick="openDetail(${i})" title="AI Analysis">
@@ -542,9 +553,11 @@
             const score = parseInt(p.match_score) || 0;
             const isFavorite = state.favorites.some(f => f.name === p.name);
             const isComparing = state.compareIndices.includes(i);
+            const isExpertPick = i === 0;
 
             return `
                 <div class="product-card-modern">
+                    ${isExpertPick ? '<span class="expert-badge"><i class="fas fa-crown me-1"></i>Expert Pick</span>' : ''}
                     <div class="product-image">
                         ${p.image_url ? `<img src="${p.image_url}" alt="${p.name}">` : '<i class="fas fa-box fa-3x" style="color: var(--text-muted)"></i>'}
                         <div class="match-score-ring">
@@ -561,7 +574,8 @@
                             <span class="stars"><i class="fas fa-star"></i> ${(p.rating || 4.5).toFixed(1)}</span>
                             <span>${p.review_count || 100} reviews</span>
                         </div>
-                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 8px 0 0; flex-grow: 1;">${p.ai_reason || p.reason || 'Smart home device recommendation'}</p>
+                        ${renderFeatureChips(p.features)}
+                        <p class="product-reason">${p.ai_reason || p.reason || 'Smart home device recommendation'}</p>
                         
                         <div class="product-actions">
                             <button class="action-btn" onclick="openDetail(${i})" title="AI Analysis">

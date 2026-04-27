@@ -2,6 +2,7 @@ from typing import Optional, Dict, Any, List
 import json
 import httpx
 import logging
+import re
 from string import Template
 
 from .config import GROQ_API_KEY, GROQ_API_URL, GROQ_MODEL, REQUEST_TIMEOUT
@@ -507,15 +508,38 @@ def generate_product_reason(product_name: str, ai: AIAnalysis) -> str:
     return f"Matches your search for {ai.product_category or 'smart appliance'}."
 
 
-def compute_match_score(product_name: str, ai: AIAnalysis) -> float:
-    """Compute a 0-100 feature match score for a product against AI analysis."""
-    if not ai.required_features:
+def compute_match_score(
+    product_name: str,
+    ai: AIAnalysis,
+    product_features: Optional[List[str]] = None,
+    product_description: str = "",
+) -> float:
+    """Compute a dynamic 0-100 feature alignment score using keyword overlap."""
+    user_phrases: List[str] = []
+    if ai.required_features:
+        user_phrases.extend([str(feature) for feature in ai.required_features if str(feature).strip()])
+    if ai.product_category:
+        user_phrases.append(str(ai.product_category))
+    if ai.brand:
+        user_phrases.append(str(ai.brand))
+
+    user_keywords: List[str] = []
+    for phrase in user_phrases:
+        user_keywords.extend([token for token in re.findall(r"[a-z0-9]+", phrase.lower()) if len(token) >= 3])
+    user_keywords = list(dict.fromkeys(user_keywords))
+
+    if not user_keywords:
         return 50.0
-    name_lower = product_name.lower()
-    matched = sum(1 for f in ai.required_features if f.lower() in name_lower)
-    base = (matched / len(ai.required_features)) * 70
-    if ai.product_category and ai.product_category.lower() in name_lower:
-        base += 20
-    if ai.brand and ai.brand.lower() in name_lower:
-        base += 10
-    return min(round(base, 1), 100.0)
+
+    product_blob = " ".join(
+        [
+            product_name or "",
+            " ".join(product_features or []),
+            product_description or "",
+        ]
+    ).lower()
+
+    matched = sum(1 for keyword in user_keywords if keyword in product_blob)
+    total = max(len(user_keywords), 1)
+    feature_score = int((matched / total) * 100)
+    return float(max(0, min(feature_score, 100)))
