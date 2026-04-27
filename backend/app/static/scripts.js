@@ -757,17 +757,17 @@
             verdictContainer.innerHTML = `
                 <div class="glass-card expert-verdict-card neon-glow-subtle">
                     <div class="expert-ribbon"><i class="fas fa-crown me-1"></i>Expert Pick</div>
-                    <div class="row align-items-center mt-3">
+                    <div class="row align-items-center mt-3 expert-verdict-content">
                         <div class="col-md-2 text-center">
-                            <i class="fas fa-microchip fa-4x text-accent mb-3"></i>
+                            <i class="fas fa-microchip fa-4x mb-3 expert-verdict-icon"></i>
                         </div>
                         <div class="col-md-7">
-                            <h4 class="fw-800 font-serif" style="color:#111827 !important;opacity:1 !important;background:rgba(255,255,255,0.98);padding:6px 12px;border-radius:12px;display:inline-block;box-decoration-break:clone;-webkit-box-decoration-break:clone;text-shadow:none;filter:none;">${best.name}</h4>
-                            <p class="mb-0 text-secondary">${data.best_product_reason}</p>
+                            <h4 class="fw-800 font-serif expert-verdict-title">${best.name}</h4>
+                            <p class="mb-0 expert-verdict-reason">${data.best_product_reason}</p>
                         </div>
-                        <div class="col-md-3 text-end">
-                            <div class="h4 fw-800 text-gold">${formatPrice(best.price_inr)}</div>
-                            <a href="${best.product_link}" target="_blank" class="btn btn-premium mt-2 w-100">Claim Best Deal</a>
+                        <div class="col-md-3 text-end expert-verdict-cta-block">
+                            <div class="h4 fw-800 expert-verdict-price">${formatPrice(best.price_inr)}</div>
+                            <a href="${best.product_link}" target="_blank" class="btn btn-premium mt-2 w-100 expert-verdict-cta">Claim Best Deal</a>
                         </div>
                     </div>
                 </div>
