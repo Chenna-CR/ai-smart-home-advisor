@@ -99,6 +99,7 @@ class Product(BaseModel):
     product_link: Optional[str] = None
     store: Optional[str] = None
     features: List[str] = Field(default_factory=list)
+    key_features: List[str] = Field(default_factory=list)
     match_score: Optional[float] = Field(None, description="Feature match score 0-100")
     ai_reason: Optional[str] = Field(None, description="AI explanation for why this product fits")
     pros: List[str] = Field(default_factory=list)

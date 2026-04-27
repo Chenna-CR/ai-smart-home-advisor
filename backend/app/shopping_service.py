@@ -40,6 +40,17 @@ QUERY_STOPWORDS = {
     "show", "find", "search", "buy", "price", "budget", "smart", "ai", "home", "appliance", "appliances",
 }
 
+BROAD_QUERY_PHRASES = {
+    "smart home device",
+    "smart home devices",
+    "smart home product",
+    "smart home products",
+    "smart home gadget",
+    "smart home gadgets",
+    "smart home appliance",
+    "smart home appliances",
+}
+
 UNSAFE_LISTING_PATTERNS = [
     r"\bsex\s*toy\b",
     r"\badult\s*toy\b",
@@ -344,6 +355,16 @@ def _query_tokens(user_query: str) -> List[str]:
     return list(dict.fromkeys(tokens))
 
 
+def _is_broad_query(user_query: str, query_tokens: Optional[List[str]] = None) -> bool:
+    text = (user_query or "").lower().strip()
+    if not text:
+        return False
+    if any(phrase in text for phrase in BROAD_QUERY_PHRASES):
+        return True
+    tokens = query_tokens if query_tokens is not None else _query_tokens(user_query)
+    return len(tokens) <= 2 and any(token in {"device", "devices", "product", "products", "gadget", "gadgets", "item", "items"} for token in tokens)
+
+
 def _matches_category(product: Dict[str, Any], category_tokens: List[str], strict_name_only: bool = True) -> bool:
     if not category_tokens:
         return True
@@ -369,6 +390,12 @@ def filter_relevant_products(products, ai_result, user_query):
 
     category_tokens = _category_tokens(ai_result)
     query_tokens = _query_tokens(user_query)
+    broad_query = _is_broad_query(user_query, query_tokens)
+
+    if broad_query:
+        broad_filtered = [product for product in products if _contains_required_smart_keyword(product)]
+        if broad_filtered:
+            return broad_filtered
 
     strict_filtered = []
     for product in products:
@@ -408,6 +435,55 @@ def filter_relevant_products(products, ai_result, user_query):
 
     scored.sort(key=lambda item: item[0], reverse=True)
     return [item[1] for item in scored if item[0] > 0] or [item[1] for item in scored]
+
+
+def _infer_category_bucket(product: Dict[str, Any]) -> str:
+    blob = _build_product_text_blob(product)
+    bucket_map = [
+        ("camera", ["camera", "cctv", "security cam", "doorbell"]),
+        ("plug", ["plug", "socket", "outlet", "power strip"]),
+        ("switch", ["switch", "relay", "wall switch"]),
+        ("sensor", ["sensor", "motion", "temperature", "contact", "leak"]),
+        ("speaker", ["speaker", "echo", "nest", "alexa", "assistant"]),
+        ("bulb", ["bulb", "light", "lamp", "led"]),
+        ("lock", ["lock", "door lock", "deadbolt"]),
+        ("vacuum", ["vacuum", "cleaner", "robot vacuum"]),
+        ("fan", ["fan", "air circulator", "ceiling fan"]),
+        ("ac", ["air conditioner", "ac", "inverter ac"]),
+    ]
+    for category, tokens in bucket_map:
+        if any(token in blob for token in tokens):
+            return category
+    return "other"
+
+
+def select_diverse_top_products(products: List[Dict[str, Any]], limit: int = 5) -> List[Dict[str, Any]]:
+    """Select the highest-scoring products while keeping category variety."""
+    if not products:
+        return []
+
+    sorted_products = sorted(products, key=lambda item: item.get("match_score", 0), reverse=True)
+    chosen: List[Dict[str, Any]] = []
+    seen_categories: set = set()
+
+    for product in sorted_products:
+        category_bucket = _infer_category_bucket(product)
+        if category_bucket in seen_categories:
+            continue
+        chosen.append(product)
+        seen_categories.add(category_bucket)
+        if len(chosen) >= limit:
+            return chosen
+
+    if len(chosen) < limit:
+        for product in sorted_products:
+            if product in chosen:
+                continue
+            chosen.append(product)
+            if len(chosen) >= limit:
+                break
+
+    return chosen[:limit]
 
 
 def _feature_match_score(product: Dict[str, Any], requirements: Dict[str, Any]) -> Tuple[float, str]:

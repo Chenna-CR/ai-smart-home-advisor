@@ -34,6 +34,10 @@
         return `<div class="feature-chip-row">${items.map((feature) => `<span class="feature-chip">${feature}</span>`).join('')}</div>`;
     }
 
+    function getKeyFeatures(product) {
+        return product.key_features || product.features || [];
+    }
+
     // ─── INITIALIZATION ───────────────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
         setupEventListeners();
@@ -369,7 +373,7 @@
                                 <span class="stars"><i class="fas fa-star"></i> ${(p.rating || 4.5).toFixed(1)}</span>
                                 <span>${p.review_count || 100} reviews</span>
                             </div>
-                            ${renderFeatureChips(p.features)}
+                            ${renderFeatureChips(getKeyFeatures(p))}
                             <p class="product-reason">${p.ai_reason || p.reason || 'Smart home device recommendation'}</p>
                             
                             <div class="product-actions">
@@ -574,7 +578,7 @@
                             <span class="stars"><i class="fas fa-star"></i> ${(p.rating || 4.5).toFixed(1)}</span>
                             <span>${p.review_count || 100} reviews</span>
                         </div>
-                        ${renderFeatureChips(p.features)}
+                        ${renderFeatureChips(getKeyFeatures(p))}
                         <p class="product-reason">${p.ai_reason || p.reason || 'Smart home device recommendation'}</p>
                         
                         <div class="product-actions">
@@ -722,7 +726,7 @@
             </tr>
              <tr class="compare-row">
                 <td class="fw-700">Key Features</td>
-                ${items.map(p => `<td><div class="small">${(p.features || []).slice(0, 4).join(', ') || 'N/A'}</div></td>`).join('')}
+                ${items.map(p => `<td><div class="small">${((p.key_features || p.features || []).slice(0, 4).join(', ')) || 'N/A'}</div></td>`).join('')}
             </tr>
             <tr class="compare-row">
                 <td class="fw-700">Expert Verdict</td>
