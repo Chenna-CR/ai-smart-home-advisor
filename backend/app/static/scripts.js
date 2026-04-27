@@ -349,7 +349,6 @@
         if (recContainer && state.lastResults.length > 0) {
             recContainer.className = 'product-grid-modern';
             recContainer.innerHTML = state.lastResults.map((p, i) => {
-                const score = parseInt(p.match_score) || 0;
                 const isFavorite = state.favorites.some(f => f.name === p.name);
                 const isComparing = state.compareIndices.includes(i);
                 const isExpertPick = i === 0;
@@ -359,12 +358,6 @@
                         ${isExpertPick ? '<span class="expert-badge"><i class="fas fa-crown me-1"></i>Expert Pick</span>' : ''}
                         <div class="product-image">
                             ${p.image_url ? `<img src="${p.image_url}" alt="${p.name}">` : '<i class="fas fa-box fa-3x" style="color: var(--text-muted)"></i>'}
-                            <div class="match-score-ring">
-                                <div class="score-text">
-                                    <div class="score-number">${score}</div>
-                                    <div class="score-label">Match</div>
-                                </div>
-                            </div>
                         </div>
                         <div class="product-details">
                             <div class="product-title">${p.name}</div>
@@ -554,7 +547,6 @@
         }
 
         grid.innerHTML = products.map((p, i) => {
-            const score = parseInt(p.match_score) || 0;
             const isFavorite = state.favorites.some(f => f.name === p.name);
             const isComparing = state.compareIndices.includes(i);
             const isExpertPick = i === 0;
@@ -564,12 +556,6 @@
                     ${isExpertPick ? '<span class="expert-badge"><i class="fas fa-crown me-1"></i>Expert Pick</span>' : ''}
                     <div class="product-image">
                         ${p.image_url ? `<img src="${p.image_url}" alt="${p.name}">` : '<i class="fas fa-box fa-3x" style="color: var(--text-muted)"></i>'}
-                        <div class="match-score-ring">
-                            <div class="score-text">
-                                <div class="score-number">${score}</div>
-                                <div class="score-label">Match</div>
-                            </div>
-                        </div>
                     </div>
                     <div class="product-details">
                         <div class="product-title">${p.name}</div>
