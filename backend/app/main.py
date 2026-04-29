@@ -325,9 +325,12 @@ async def index(request: Request):
 @app.get("/how-it-works", response_class=HTMLResponse)
 async def how_it_works(request: Request):
     """Serve the How It Works page."""
-    return templates.TemplateResponse(request, "how_it_works.html", {
-        "request": request,
-    })
+    return templates.TemplateResponse(
+        "how_it_works.html",
+        {
+            "request": request,
+        },
+    )
 
 # ─── AI Advisor (v3.1.0 Hybrid Architecture) ──────────────────
 @app.post("/advisor")
