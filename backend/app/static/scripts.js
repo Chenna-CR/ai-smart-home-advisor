@@ -26,6 +26,18 @@
     const $ = (s) => document.querySelector(s);
     const $$ = (s) => document.querySelectorAll(s);
 
+    function renderFeatureChips(features) {
+        const items = (features || []).filter(Boolean).slice(0, 6);
+        if (!items.length) {
+            return '<div class="feature-chip-row"><span class="feature-chip">Feature details available</span></div>';
+        }
+        return `<div class="feature-chip-row">${items.map((feature) => `<span class="feature-chip">${feature}</span>`).join('')}</div>`;
+    }
+
+    function getKeyFeatures(product) {
+        return product.key_features || product.features || [];
+    }
+
     // ─── INITIALIZATION ───────────────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
         setupEventListeners();
@@ -337,20 +349,15 @@
         if (recContainer && state.lastResults.length > 0) {
             recContainer.className = 'product-grid-modern';
             recContainer.innerHTML = state.lastResults.map((p, i) => {
-                const score = parseInt(p.match_score) || 0;
                 const isFavorite = state.favorites.some(f => f.name === p.name);
                 const isComparing = state.compareIndices.includes(i);
+                const isExpertPick = i === 0;
 
                 return `
                     <div class="product-card-modern">
+                        ${isExpertPick ? '<span class="expert-badge"><i class="fas fa-crown me-1"></i>Expert Pick</span>' : ''}
                         <div class="product-image">
                             ${p.image_url ? `<img src="${p.image_url}" alt="${p.name}">` : '<i class="fas fa-box fa-3x" style="color: var(--text-muted)"></i>'}
-                            <div class="match-score-ring">
-                                <div class="score-text">
-                                    <div class="score-number">${score}</div>
-                                    <div class="score-label">Match</div>
-                                </div>
-                            </div>
                         </div>
                         <div class="product-details">
                             <div class="product-title">${p.name}</div>
@@ -359,7 +366,8 @@
                                 <span class="stars"><i class="fas fa-star"></i> ${(p.rating || 4.5).toFixed(1)}</span>
                                 <span>${p.review_count || 100} reviews</span>
                             </div>
-                            <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 8px 0 0; flex-grow: 1;">${p.ai_reason || p.reason || 'Smart home device recommendation'}</p>
+                            ${renderFeatureChips(getKeyFeatures(p))}
+                            <p class="product-reason">${p.ai_reason || p.reason || 'Smart home device recommendation'}</p>
                             
                             <div class="product-actions">
                                 <button class="action-btn" onclick="openDetail(${i})" title="AI Analysis">
@@ -539,20 +547,15 @@
         }
 
         grid.innerHTML = products.map((p, i) => {
-            const score = parseInt(p.match_score) || 0;
             const isFavorite = state.favorites.some(f => f.name === p.name);
             const isComparing = state.compareIndices.includes(i);
+            const isExpertPick = i === 0;
 
             return `
                 <div class="product-card-modern">
+                    ${isExpertPick ? '<span class="expert-badge"><i class="fas fa-crown me-1"></i>Expert Pick</span>' : ''}
                     <div class="product-image">
                         ${p.image_url ? `<img src="${p.image_url}" alt="${p.name}">` : '<i class="fas fa-box fa-3x" style="color: var(--text-muted)"></i>'}
-                        <div class="match-score-ring">
-                            <div class="score-text">
-                                <div class="score-number">${score}</div>
-                                <div class="score-label">Match</div>
-                            </div>
-                        </div>
                     </div>
                     <div class="product-details">
                         <div class="product-title">${p.name}</div>
@@ -561,7 +564,8 @@
                             <span class="stars"><i class="fas fa-star"></i> ${(p.rating || 4.5).toFixed(1)}</span>
                             <span>${p.review_count || 100} reviews</span>
                         </div>
-                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 8px 0 0; flex-grow: 1;">${p.ai_reason || p.reason || 'Smart home device recommendation'}</p>
+                        ${renderFeatureChips(getKeyFeatures(p))}
+                        <p class="product-reason">${p.ai_reason || p.reason || 'Smart home device recommendation'}</p>
                         
                         <div class="product-actions">
                             <button class="action-btn" onclick="openDetail(${i})" title="AI Analysis">
@@ -708,7 +712,7 @@
             </tr>
              <tr class="compare-row">
                 <td class="fw-700">Key Features</td>
-                ${items.map(p => `<td><div class="small">${(p.features || []).slice(0, 4).join(', ') || 'N/A'}</div></td>`).join('')}
+                ${items.map(p => `<td><div class="small">${((p.key_features || p.features || []).slice(0, 4).join(', ')) || 'N/A'}</div></td>`).join('')}
             </tr>
             <tr class="compare-row">
                 <td class="fw-700">Expert Verdict</td>
@@ -743,17 +747,17 @@
             verdictContainer.innerHTML = `
                 <div class="glass-card expert-verdict-card neon-glow-subtle">
                     <div class="expert-ribbon"><i class="fas fa-crown me-1"></i>Expert Pick</div>
-                    <div class="row align-items-center mt-3">
+                    <div class="row align-items-center mt-3 expert-verdict-content">
                         <div class="col-md-2 text-center">
-                            <i class="fas fa-microchip fa-4x text-accent mb-3"></i>
+                            <i class="fas fa-microchip fa-4x mb-3 expert-verdict-icon"></i>
                         </div>
                         <div class="col-md-7">
-                            <h4 class="fw-800 font-serif" style="color:#111827 !important;opacity:1 !important;background:rgba(255,255,255,0.98);padding:6px 12px;border-radius:12px;display:inline-block;box-decoration-break:clone;-webkit-box-decoration-break:clone;text-shadow:none;filter:none;">${best.name}</h4>
-                            <p class="mb-0 text-secondary">${data.best_product_reason}</p>
+                            <h4 class="fw-800 font-serif expert-verdict-title">${best.name}</h4>
+                            <p class="mb-0 expert-verdict-reason">${data.best_product_reason}</p>
                         </div>
-                        <div class="col-md-3 text-end">
-                            <div class="h4 fw-800 text-gold">${formatPrice(best.price_inr)}</div>
-                            <a href="${best.product_link}" target="_blank" class="btn btn-premium mt-2 w-100">Claim Best Deal</a>
+                        <div class="col-md-3 text-end expert-verdict-cta-block">
+                            <div class="h4 fw-800 expert-verdict-price">${formatPrice(best.price_inr)}</div>
+                            <a href="${best.product_link}" target="_blank" class="btn btn-premium mt-2 w-100 expert-verdict-cta">Claim Best Deal</a>
                         </div>
                     </div>
                 </div>

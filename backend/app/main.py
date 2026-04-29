@@ -14,7 +14,7 @@ import uvicorn
 
 from .config import SEARCH_MODE, GROQ_API_KEY, SERPAPI_KEY, SESSION_SECRET_KEY, SESSION_COOKIE_SECURE
 from .ai_service import analyze_text_with_groq, build_search_query, generate_product_reason, compute_match_score, generate_product_analysis
-from .shopping_service import serpapi_search, rank_products, filter_relevant_products
+from .shopping_service import serpapi_search, rank_products, filter_relevant_products, select_diverse_top_products
 from .models import AdvisorResponse, Product, CompareResponse, ParsedUserIntent, AIAnalysis
 from .keywords import PRODUCT_CATEGORIES, SMART_HOME_BRANDS, FEATURE_KEYWORDS, PRICE_RANGES, ALL_KEYWORDS
 from .auth import auth_router, GUEST_COOKIE_NAME, ensure_identity
@@ -67,6 +67,7 @@ UNSAFE_CONTENT_PATTERNS = [
 # Setup templates 
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
 templates = Jinja2Templates(directory=os.path.join(APP_DIR, "templates"))
+templates.env.cache = {}
 
 # Mount static files
 STATIC_DIR = os.path.join(APP_DIR, "static")
@@ -316,6 +317,7 @@ async def index(request: Request):
         "index.html",
         {
             "request": request,
+            "products": [],
             "categories": tuple(PRODUCT_CATEGORIES.keys()),
         },
     )
@@ -324,7 +326,7 @@ async def index(request: Request):
 @app.get("/how-it-works", response_class=HTMLResponse)
 async def how_it_works(request: Request):
     """Serve the How It Works page."""
-    return templates.TemplateResponse("how_it_works.html", {
+    return templates.TemplateResponse(request, "how_it_works.html", {
         "request": request,
     })
 
@@ -396,6 +398,7 @@ async def advisor(request: Request):
     requirements = _build_rank_requirements(ai_result)
     try:
         ranked_results = rank_products(raw_products, requirements)
+        ranked_results = select_diverse_top_products(ranked_results, limit=5)
         if not ranked_results:
             ranked_results = []
     except Exception as e:
@@ -409,6 +412,7 @@ async def advisor(request: Request):
             }
             for i, p in enumerate(raw_products)
         ]
+        ranked_results = select_diverse_top_products(ranked_results, limit=5)
 
     # PAGE 4: Mapping to modern UI/UX Response Structure
     recommended = []
@@ -423,6 +427,7 @@ async def advisor(request: Request):
             product_link=p.get("product_link", ""),
             store=p.get("store", ""),
             features=p.get("features", []),
+            key_features=p.get("features", []),
             match_score=float(p.get("match_score", 0)),
             ai_reason=p.get("reason") or _build_reason_from_ai(p, ai_result),
             pros=pros,
@@ -519,6 +524,7 @@ async def manual_search(request: Request):
                 product_link=p.get("product_link"),
                 store=p.get("store", ""),
                 features=p.get("features", []),
+                key_features=p.get("features", []),
                 match_score=float(p.get("match_score", 0)),
                 ai_reason=p.get("reason") or _build_reason_from_ai(p, manual_ai_result),
                 pros=pros,
@@ -684,7 +690,8 @@ def health_check():
 
 
 if __name__ == "__main__":
-    uvicorn.run("app.main:app", host="0.0.0.0", port=int(os.getenv("PORT", "8000")))
+    # When running from the repository root, the package path is backend.app
+    uvicorn.run("backend.app.main:app", host="0.0.0.0", port=int(os.getenv("PORT", "8000")))
 
 
 

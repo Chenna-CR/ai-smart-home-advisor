@@ -998,9 +998,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .expert-verdict-card {
-    background: linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%);
-    border: 1px solid var(--gold);
+    background: linear-gradient(135deg, rgba(49, 46, 129, 0.95) 0%, rgba(67, 56, 202, 0.92) 45%, rgba(30, 27, 75, 0.96) 100%);
+    border: 1px solid rgba(250, 204, 21, 0.85);
     position: relative;
+    color: #f8fafc;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .expert-ribbon {
@@ -1014,6 +1016,49 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 800;
     font-size: 0.75rem;
     text-transform: uppercase;
+}
+
+.expert-verdict-content {
+    padding-top: 0.4rem;
+}
+
+.expert-verdict-icon {
+    color: #e2e8f0;
+}
+
+.expert-verdict-title {
+    color: #0f172a;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 10px 14px;
+    border-radius: 14px;
+    display: inline-block;
+    line-height: 1.2;
+    margin-bottom: 12px;
+    max-width: 100%;
+}
+
+.expert-verdict-reason {
+    color: #e5e7eb;
+    line-height: 1.7;
+    letter-spacing: 0.01em;
+    margin-top: 4px;
+}
+
+.expert-verdict-price {
+    color: #fef08a;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+}
+
+.expert-verdict-cta {
+    border: none;
+    font-weight: 700;
+}
+
+.expert-verdict-cta-block {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .unlimited-tag {
@@ -1312,6 +1357,7 @@ h1, h2, h3, h4, h5, h6 {
     grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
     gap: 28px;
     margin-top: 0;
+    align-items: stretch;
 }
 
 .product-card-modern {
@@ -1319,11 +1365,26 @@ h1, h2, h3, h4, h5, h6 {
     backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
     border: 1px solid var(--glass-border);
     border-radius: calc(var(--radius-lg) + 4px);
-    overflow: hidden;
+    overflow: visible;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
+    position: relative;
+    height: 100%;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.expert-badge {
+    position: absolute;
+    top: -12px;
+    left: 20px;
+    background: #FFD700;
+    color: #000;
+    padding: 6px 14px;
+    font-weight: bold;
+    border-radius: 8px;
+    z-index: 10;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .product-card-modern:hover {
@@ -1396,6 +1457,7 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    min-height: 280px;
 }
 
 .product-title,
@@ -1412,6 +1474,33 @@ h1, h2, h3, h4, h5, h6 {
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
 }
 
+.feature-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 4px 0 2px;
+}
+
+.feature-chip {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 5px 10px;
+    border-radius: 12px;
+    margin: 3px;
+    display: inline-block;
+    font-size: 12px;
+    color: #EDEDED;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.product-reason {
+    font-size: 0.92rem;
+    color: #EDEDED;
+    margin: 8px 0 0;
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+    flex-grow: 1;
+}
+
 #detailContent .product-title,
 #detailContent .product-name {
     color: #111827 !important;
@@ -1420,6 +1509,10 @@ h1, h2, h3, h4, h5, h6 {
 
 #bestProductVerdict h4 {
     color: #111827 !important;
+}
+
+#bestProductVerdict p {
+    margin-bottom: 0;
 }
 
 /* ── HOW IT WORKS PAGE ─────────────────────────────────── */
@@ -2191,5 +2284,20 @@ h1, h2, h3, h4, h5, h6 {
     
     .page-title {
         font-size: 1.8rem;
+    }
+
+    .expert-verdict-card {
+        padding: 20px 16px;
+    }
+
+    .expert-verdict-title {
+        width: 100%;
+        font-size: 1.25rem;
+    }
+
+    .expert-verdict-cta-block {
+        align-items: stretch;
+        text-align: left !important;
+        margin-top: 8px;
     }
 }
