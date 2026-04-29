@@ -68,6 +68,22 @@ UNSAFE_CONTENT_PATTERNS = [
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
 templates = Jinja2Templates(directory=os.path.join(APP_DIR, "templates"))
 
+# Compatibility wrapper for TemplateResponse across Starlette versions.
+def render_template(request: Request, template_name: str, context: Optional[Dict] = None):
+    """Render templates compatibly with different Starlette/TemplateResponse signatures.
+
+    Tries the newer signature `TemplateResponse(request, name, context)` first and
+    falls back to older `TemplateResponse(name, {"request": request, ...})`.
+    """
+    ctx = dict(context or {})
+    try:
+        # Newer Starlette: TemplateResponse(request, name, context)
+        return templates.TemplateResponse(request, template_name, ctx)
+    except TypeError:
+        # Older Starlette: TemplateResponse(name, {"request": request, **context})
+        ctx.setdefault("request", request)
+        return templates.TemplateResponse(template_name, ctx)
+
 # Mount static files
 STATIC_DIR = os.path.join(APP_DIR, "static")
 if not os.path.exists(STATIC_DIR):
@@ -312,10 +328,10 @@ async def generate_pros_cons(product: Dict, ai_result: AIAnalysis) -> Tuple[List
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
     """Serve the home page."""
-    return templates.TemplateResponse(
+    return render_template(
+        request,
         "index.html",
         {
-            "request": request,
             "categories": tuple(str(k) for k in PRODUCT_CATEGORIES.keys()),
         },
     )
@@ -324,12 +340,7 @@ async def index(request: Request):
 @app.get("/how-it-works", response_class=HTMLResponse)
 async def how_it_works(request: Request):
     """Serve the How It Works page."""
-    return templates.TemplateResponse(
-        "how_it_works.html",
-        {
-            "request": request,
-        },
-    )
+    return render_template(request, "how_it_works.html")
 
 # ─── AI Advisor (v3.1.0 Hybrid Architecture) ──────────────────
 @app.post("/advisor")
