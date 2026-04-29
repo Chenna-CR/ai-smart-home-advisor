@@ -67,7 +67,6 @@ UNSAFE_CONTENT_PATTERNS = [
 # Setup templates 
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
 templates = Jinja2Templates(directory=os.path.join(APP_DIR, "templates"))
-templates.env.cache = None
 templates.env.auto_reload = True
 
 # Mount static files
@@ -318,7 +317,6 @@ async def index(request: Request):
         "index.html",
         {
             "request": request,
-            "products": [],
             "categories": tuple(str(k) for k in PRODUCT_CATEGORIES.keys()),
         },
     )
